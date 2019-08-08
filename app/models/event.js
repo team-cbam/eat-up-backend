@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const User = require('user')
+const userSchema = require('./../schemas/user.js')
 
 const eventSchema = new mongoose.Schema({
   name: {
@@ -14,15 +14,20 @@ const eventSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
-  host: {
-    type: mongoose.Schema.Type.ObjectId,
+  description: {
+    type: String,
+    required: true
+  },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  rsvp: {
-    type: [User],
-    default: []
-  }
+  rsvps: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false
+  }]
 }, {
   timestamps: true
 })
