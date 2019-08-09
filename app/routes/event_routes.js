@@ -34,6 +34,7 @@ const uploadImage = require('../../lib/s3UploadApi')
 // GET /events
 router.get('/events', (req, res, next) => {
   Event.find()
+    .populate('rsvp')
     .then(events => {
       // `events` will be an array of Mongoose documents
       // we want to convert each one to a POJO, so we use `.map` to
@@ -51,7 +52,6 @@ router.get('/events', (req, res, next) => {
 router.get('/events/:id', (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
   Event.findById(req.params.id)
-    .populate('owner')
     .populate('rsvp')
     .then(handle404)
     // if `findById` is succesful, respond with 200 and "event" JSON
@@ -121,10 +121,6 @@ router.patch('/events/:id', removeBlanks, (req, res, next) => {
   Event.findById(req.params.id)
     .then(handle404)
     .then(event => {
-      // pass the `req` object and the Mongoose record to `requireOwnership`
-      // it will throw an error if the current user isn't the owner
-      requireOwnership(req, event)
-
       // pass the result of Mongoose's `.update` to the next `.then`
       return event.update(req.body.event)
     })
