@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const DateOnly = require('mongoose-dateonly')(mongoose)
 
 const eventSchema = new mongoose.Schema({
   name: {
@@ -10,7 +11,7 @@ const eventSchema = new mongoose.Schema({
     required: true
   },
   date: {
-    type: Date,
+    type: DateOnly,
     required: true
   },
   description: {
