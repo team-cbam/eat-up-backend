@@ -31,7 +31,6 @@ const router = express.Router()
 // GET /events
 router.get('/events', (req, res, next) => {
   Event.find()
-    .populate('rsvp')
     .then(events => {
       // `events` will be an array of Mongoose documents
       // we want to convert each one to a POJO, so we use `.map` to
@@ -49,6 +48,7 @@ router.get('/events', (req, res, next) => {
 router.get('/events/:id', (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
   Event.findById(req.params.id)
+    .populate('owner')
     .populate('rsvp')
     .then(handle404)
     // if `findById` is succesful, respond with 200 and "event" JSON
