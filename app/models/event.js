@@ -23,7 +23,7 @@ const eventSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  imageUrl: {
+  image: {
     type: String,
     required: true
   },
