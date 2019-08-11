@@ -62,30 +62,56 @@ router.get('/events/:id', (req, res, next) => {
 
 // CREATE
 // POST /events
-router.post('/events', requireToken, upload.single('image'), (req, res, next) => {
-  // send all form data to aws to save image
-  uploadImage(req.file)
-    .then(awsRes => {
-      // console.log(awsRes)
-      // set owner of new event to be current user
-      req.body.event.owner = req.user.id
-      // req and awsRes data to create a new doc in db
-      return Event.create({
-        image: awsRes.Location,
-        name: req.body.event.name,
-        location: req.body.event.location,
-        date: req.body.event.date,
-        description: req.body.event.description,
-        owner: req.body.event.owner,
-        rsvps: []
+// router.post('/events', [requireToken, upload.single('file')], (req, res, next) => {
+//   // send all form data to aws to save image
+//   console.log(req)
+//   uploadImage(req.file)
+//     .then(awsRes => {
+//       // console.log(awsRes)
+//       // set owner of new event to be current user
+//       req.body.owner = req.user.id
+//       // req and awsRes data to create a new doc in db
+//       return Event.create({
+//         image: awsRes.Location,
+//         name: req.body.name,
+//         location: req.body.location,
+//         date: req.body.date,
+//         description: req.body.description,
+//         owner: req.body.owner,
+//         rsvps: []
+//       })
+//     })
+//     // respond to succesful `create` with status 201 and JSON of new "event"
+//     .then(data => res.status(201).json({
+//       event: data.toObject()
+//     }))
+//     // can send an error message back to the client
+//     .catch(next)
+// })
+router.post('/events', [requireToken, upload.single('file')], (req, res, next) => {
+  if (req.file) {
+    console.log(req.file)
+    uploadImage(req.file)
+      .then(awsRes => {
+        console.log(awsRes)
+        req.body.owner = req.user.id
+        return Event.create({
+          image: awsRes.Location,
+          name: req.body.name,
+          location: req.body.location,
+          date: req.body.date,
+          description: req.body.description,
+          owner: req.body.owner,
+          rsvps: []
+        })
       })
-    })
-    // respond to succesful `create` with status 201 and JSON of new "event"
-    .then(data => res.status(201).json({
-      event: data.toObject()
-    }))
-    // can send an error message back to the client
-    .catch(next)
+      .then(data => res.status(201).json({
+        event: data.toObject()
+      }))
+      .catch(next)
+  } else {
+    console.log('no req.file')
+  }
 })
 
 // UPDATE
