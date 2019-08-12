@@ -88,20 +88,17 @@ router.get('/events/:id', (req, res, next) => {
 //     // can send an error message back to the client
 //     .catch(next)
 // })
-router.post('/events', [requireToken, upload.single('file')], (req, res, next) => {
+router.post('/events', requireToken, upload.single('file'), (req, res, next) => {
   if (req.file) {
-    console.log(req.file)
     uploadImage(req.file)
       .then(awsRes => {
-        console.log(awsRes)
-        req.body.owner = req.user.id
         return Event.create({
-          image: awsRes.Location,
           name: req.body.name,
           location: req.body.location,
           date: req.body.date,
           description: req.body.description,
-          owner: req.body.owner,
+          owner: req.user._id,
+          image: awsRes.Location,
           rsvps: []
         })
       })
@@ -110,7 +107,7 @@ router.post('/events', [requireToken, upload.single('file')], (req, res, next) =
       }))
       .catch(next)
   } else {
-    console.log('no req.file')
+    // console.log('no req.file')
   }
 })
 
