@@ -62,6 +62,23 @@ router.get('/events/:id', (req, res, next) => {
 
 // CREATE
 // POST /events
+router.post('/events', requireToken, (req, res, next) => {
+  // set owner of new event to be current user
+  req.body.event.owner = req.user.id
+
+  Event.create(req.body.event)
+    // respond to succesful `create` with status 201 and JSON of new "event"
+    .then(event => {
+      res.status(201).json({ event: event.toObject() })
+    })
+    // if an error occurs, pass it off to our error handler
+    // the error handler needs the error message and the `res` object so that it
+    // can send an error message back to the client
+    .catch(next)
+})
+
+// CREATE
+// POST /events
 // router.post('/events', [requireToken, upload.single('file')], (req, res, next) => {
 //   // send all form data to aws to save image
 //   console.log(req)
@@ -88,28 +105,28 @@ router.get('/events/:id', (req, res, next) => {
 //     // can send an error message back to the client
 //     .catch(next)
 // })
-router.post('/events', requireToken, upload.single('file'), (req, res, next) => {
-  if (req.file) {
-    uploadImage(req.file)
-      .then(awsRes => {
-        return Event.create({
-          name: req.body.name,
-          location: req.body.location,
-          date: req.body.date,
-          description: req.body.description,
-          owner: req.user._id,
-          image: awsRes.Location,
-          rsvps: []
-        })
-      })
-      .then(data => res.status(201).json({
-        event: data.toObject()
-      }))
-      .catch(next)
-  } else {
-    // console.log('no req.file')
-  }
-})
+// router.post('/events', requireToken, upload.single('file'), (req, res, next) => {
+//   if (req.file) {
+//     uploadImage(req.file)
+//       .then(awsRes => {
+//         return Event.create({
+//           name: req.body.name,
+//           location: req.body.location,
+//           date: req.body.date,
+//           description: req.body.description,
+//           owner: req.user._id,
+//           image: awsRes.Location,
+//           rsvps: []
+//         })
+//       })
+//       .then(data => res.status(201).json({
+//         event: data.toObject()
+//       }))
+//       .catch(next)
+//   } else {
+//     // console.log('no req.file')
+//   }
+// })
 
 // UPDATE
 // PATCH /events/5a7db6c74d55bc51bdf39793
