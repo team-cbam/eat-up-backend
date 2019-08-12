@@ -9,10 +9,8 @@ const ImageUpload = require('../models/image_upload')
 
 // Basic POST Routes
 router.post('/image-uploads', upload.single('file'), (req, res, next) => {
-  console.log(req.file)
   uploadImage(req.file)
     .then(awsRes => {
-      console.log(awsRes)
       return ImageUpload.create({
         url: awsRes.Location,
         name: awsRes.Key,
