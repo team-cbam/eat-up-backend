@@ -6,9 +6,12 @@ Eat Up (tm) is a scrumptious social site for scheduling your snacking shindigs!!
 #### HOW EAT UP WORKS
 Anyone can browse Eat Up and view food related events, but to really harness the power, sign up and then sign in.  Being a registered user will allow you to create your own events that you’d like to draw the public to.  As a registered user you’ll also be able to RSVP to events of interest to you so you don’t miss a chance to attend those exciting edible endeavors!
 
-#### Deployed Site Link:  <https://team-cbam.github.io/eat-up-client/>
-#### Front End Github Repo - <https://github.com/team-cbam/eat-up-client>
-#### Back End Github Repo - <https://github.com/team-cbam/eat-up-backend>
+#### Links:
+[Deployed Site](https://team-cbam.github.io/eat-up-client/)
+
+[Front End Github Repo](https://github.com/team-cbam/eat-up-client)
+
+[Back End Deployed Site](https://shielded-wildwood-50568.herokuapp.com/)
 
 #### TECHNOLOGIES USED:
 -   HTML
@@ -49,17 +52,17 @@ Anyone can browse Eat Up and view food related events, but to really harness the
 -   <https://i.imgur.com/n6vknA0.png>
 
 #### Catalog of Routes:
-| HTTP Verb    | Paths    |
-| --------- |: --------- :|
-| POST     | /sign-up |
-| POST     | /sign-in     |
-| PATCH | /change-password  |
-| DELETE | /sign-out      |
-| GET | /events      |
-| GET | /events/:id      |
-| POST | /events      |
-| PATCH | /events/:id      |
-| DELETE | /events/:id      |
+| HTTP Verb  |  Paths |
+|---|---|
+| POST  | /sign-up  |
+|  POST | /sign-in |
+| PATCH   | /change-password |
+|  DELETE | /sign-out  |
+| GET  | /events |
+| GET  |  /events/:id  |
+| POST  | /events  |
+|  PATCH | /events/:id  |
+| DELETE  | /events/:id  |
 
 #### Planning, Process & Problem Solving:
 
