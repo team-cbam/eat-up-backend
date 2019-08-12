@@ -26,9 +26,6 @@ const requireToken = passport.authenticate('bearer', { session: false })
 
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
-const multer = require('multer')
-const upload = multer()
-const uploadImage = require('../../lib/s3UploadApi')
 
 // INDEX
 // GET /events
@@ -131,13 +128,10 @@ router.post('/events', requireToken, (req, res, next) => {
 // UPDATE
 // PATCH /events/5a7db6c74d55bc51bdf39793
 router.patch('/events/:id', removeBlanks, (req, res, next) => {
-  // if the client attempts to change the `owner` property by including a new
-  // owner, prevent that by deleting that key/value pair
-  delete req.body.event.owner
-
   Event.findById(req.params.id)
     .then(handle404)
     .then(event => {
+      console.log('THIS EVENT', event)
       // pass the result of Mongoose's `.update` to the next `.then`
       return event.update(req.body.event)
     })
