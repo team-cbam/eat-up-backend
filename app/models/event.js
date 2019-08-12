@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const DateOnly = require('mongoose-dateonly')(mongoose)
 
 const eventSchema = new mongoose.Schema({
   name: {
