@@ -8,22 +8,21 @@ const uploadImage = require('../../lib/s3UploadApi')
 const ImageUpload = require('../models/image_upload')
 
 // Basic POST Routes
-router.post('/image-uploads',
-  upload.single('image'), (res, req, next) => {
-    console.log(req.image)
-    uploadImage(req.image)
-      .then(awsRes => {
-        console.log(awsRes)
-        return ImageUpload.create({
-          url: awsRes.Location,
-          name: awsRes.Key,
-          type: req.image.mimetype
-        })
+router.post('/image-uploads', upload.single('file'), (req, res, next) => {
+  console.log(req.file)
+  uploadImage(req.file)
+    .then(awsRes => {
+      console.log(awsRes)
+      return ImageUpload.create({
+        url: awsRes.Location,
+        name: awsRes.Key,
+        type: req.file.mimetype
       })
-      .then(data => res.sendStatus.json({
-        imageUpload: data.toObject()
-      }))
-      .catch(next)
-  })
+    })
+    .then(data => res.status(201).json({
+      imageUpload: data.toObject()
+    }))
+    .catch(next)
+})
 
 module.exports = router

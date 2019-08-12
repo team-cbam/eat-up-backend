@@ -31,6 +31,7 @@ const router = express.Router()
 // GET /events
 router.get('/events', (req, res, next) => {
   Event.find()
+    .populate('rsvp')
     .then(events => {
       // `events` will be an array of Mongoose documents
       // we want to convert each one to a POJO, so we use `.map` to
@@ -48,7 +49,6 @@ router.get('/events', (req, res, next) => {
 router.get('/events/:id', (req, res, next) => {
   // req.params.id will be set based on the `:id` in the route
   Event.findById(req.params.id)
-    .populate('owner')
     .populate('rsvp')
     .then(handle404)
     // if `findById` is succesful, respond with 200 and "event" JSON
@@ -61,7 +61,8 @@ router.get('/events/:id', (req, res, next) => {
 // POST /events
 router.post('/events', requireToken, (req, res, next) => {
   // set owner of new event to be current user
-  req.body.event.owner = req.user.id
+  console.log(req)
+  req.body.event.owner = req.user
 
   Event.create(req.body.event)
     // respond to succesful `create` with status 201 and JSON of new "event"
@@ -74,20 +75,64 @@ router.post('/events', requireToken, (req, res, next) => {
     .catch(next)
 })
 
+// CREATE
+// POST /events
+// router.post('/events', [requireToken, upload.single('file')], (req, res, next) => {
+//   // send all form data to aws to save image
+//   console.log(req)
+//   uploadImage(req.file)
+//     .then(awsRes => {
+//       // console.log(awsRes)
+//       // set owner of new event to be current user
+//       req.body.owner = req.user.id
+//       // req and awsRes data to create a new doc in db
+//       return Event.create({
+//         image: awsRes.Location,
+//         name: req.body.name,
+//         location: req.body.location,
+//         date: req.body.date,
+//         description: req.body.description,
+//         owner: req.body.owner,
+//         rsvps: []
+//       })
+//     })
+//     // respond to succesful `create` with status 201 and JSON of new "event"
+//     .then(data => res.status(201).json({
+//       event: data.toObject()
+//     }))
+//     // can send an error message back to the client
+//     .catch(next)
+// })
+// router.post('/events', requireToken, upload.single('file'), (req, res, next) => {
+//   if (req.file) {
+//     uploadImage(req.file)
+//       .then(awsRes => {
+//         return Event.create({
+//           name: req.body.name,
+//           location: req.body.location,
+//           date: req.body.date,
+//           description: req.body.description,
+//           owner: req.user._id,
+//           image: awsRes.Location,
+//           rsvps: []
+//         })
+//       })
+//       .then(data => res.status(201).json({
+//         event: data.toObject()
+//       }))
+//       .catch(next)
+//   } else {
+//     // console.log('no req.file')
+//   }
+// })
+
 // UPDATE
 // PATCH /events/5a7db6c74d55bc51bdf39793
-router.patch('/events/:id', requireToken, removeBlanks, (req, res, next) => {
-  // if the client attempts to change the `owner` property by including a new
-  // owner, prevent that by deleting that key/value pair
-  delete req.body.event.owner
-
+router.patch('/events/:id', removeBlanks, (req, res, next) => {
   Event.findById(req.params.id)
     .then(handle404)
     .then(event => {
-      // pass the `req` object and the Mongoose record to `requireOwnership`
-      // it will throw an error if the current user isn't the owner
-      requireOwnership(req, event)
-
+      console.log('THIS EVENT', event)
       // pass the result of Mongoose's `.update` to the next `.then`
       return event.update(req.body.event)
     })
