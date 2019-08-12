@@ -24,8 +24,8 @@ const eventSchema = new mongoose.Schema({
     required: true
   },
   image: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'ImageUpload'
+    type: String,
+    required: true
   },
   rsvps: [{
     type: mongoose.Schema.Types.ObjectId,

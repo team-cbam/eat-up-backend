@@ -26,6 +26,9 @@ const requireToken = passport.authenticate('bearer', { session: false })
 
 // instantiate a router (mini app that only handles routes)
 const router = express.Router()
+const multer = require('multer')
+const upload = multer()
+const uploadImage = require('../../lib/s3UploadApi')
 
 // INDEX
 // GET /events
@@ -59,19 +62,53 @@ router.get('/events/:id', (req, res, next) => {
 
 // CREATE
 // POST /events
-router.post('/events', requireToken, (req, res, next) => {
-  // set owner of new event to be current user
-  req.body.event.owner = req.user.id
-
-  Event.create(req.body.event)
-    // respond to succesful `create` with status 201 and JSON of new "event"
-    .then(event => {
-      res.status(201).json({ event: event.toObject() })
-    })
-    // if an error occurs, pass it off to our error handler
-    // the error handler needs the error message and the `res` object so that it
-    // can send an error message back to the client
-    .catch(next)
+// router.post('/events', [requireToken, upload.single('file')], (req, res, next) => {
+//   // send all form data to aws to save image
+//   console.log(req)
+//   uploadImage(req.file)
+//     .then(awsRes => {
+//       // console.log(awsRes)
+//       // set owner of new event to be current user
+//       req.body.owner = req.user.id
+//       // req and awsRes data to create a new doc in db
+//       return Event.create({
+//         image: awsRes.Location,
+//         name: req.body.name,
+//         location: req.body.location,
+//         date: req.body.date,
+//         description: req.body.description,
+//         owner: req.body.owner,
+//         rsvps: []
+//       })
+//     })
+//     // respond to succesful `create` with status 201 and JSON of new "event"
+//     .then(data => res.status(201).json({
+//       event: data.toObject()
+//     }))
+//     // can send an error message back to the client
+//     .catch(next)
+// })
+router.post('/events', requireToken, upload.single('file'), (req, res, next) => {
+  if (req.file) {
+    uploadImage(req.file)
+      .then(awsRes => {
+        return Event.create({
+          name: req.body.name,
+          location: req.body.location,
+          date: req.body.date,
+          description: req.body.description,
+          owner: req.user._id,
+          image: awsRes.Location,
+          rsvps: []
+        })
+      })
+      .then(data => res.status(201).json({
+        event: data.toObject()
+      }))
+      .catch(next)
+  } else {
+    // console.log('no req.file')
+  }
 })
 
 // UPDATE
