@@ -77,6 +77,8 @@ router.post('/events', requireToken, (req, res, next) => {
 // UPDATE
 // PATCH /events/5a7db6c74d55bc51bdf39793
 router.patch('/events/:id', removeBlanks, (req, res, next) => {
+  delete req.body.event.owner
+
   Event.findById(req.params.id)
     .then(handle404)
     .then(event => {
